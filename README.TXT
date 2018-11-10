@@ -1,6 +1,33 @@
 *****************************************************************
-   README for Dynamic C Version 10.72B
+   README for Dynamic C Version 10.72D
 *****************************************************************
+
+- Addresses Key Reinstallation Attack (KRACK) vulnerabilities in
+  the WPA2 libraries.
+  
+- Adds support for RCM4320 variant -- an RCM4310 with 1MB of SRAM
+  for firmware (instead of 512KB) and a 4MB serial flash for storage
+  (instead of 1MB).
+
+- Updated sdflash.lib to support SDHC cards from 4GB to 32GB.  Note
+  that Dynamic C still does not support FAT32.  When using SDHC cards
+  you must format them on the Rabbit with up to four FAT16 partitions,
+  but you can still read and write them on Mac/Windows/Linux.
+  Email Jim.Pause@digi.com if interested in FAT32 support in Dynamic C.
+
+- Updated FAT16.lib to work on SDHC cards (larger than 2GB).
+
+- Updated TLS to send Server Name Indication (SNI) in ClientHello.
+  Includes updates to HTTP, SMTP and POP3 client libraries.
+
+- Updated X.509 certificate handling to process subjectAltName
+  extension, allowing for improved hostname matching in TLS client
+  connections.
+
+- Defined a CC_REV macro for use in compiler version checks.
+
+- Added RCM6xxx support for Panel-Mount Keypad/Display Unit (Digi part
+  number 20-101-0502).
 
 - Adds support for SHA384/SHA512 hashes:
   - New library and updated sample.
@@ -596,6 +623,10 @@
    in an unexpected location.  When either of these instructions are followed
    by instructions other than rst 0x28, the debug kernel behaves correctly.
 
+-  The Register Contents debug window (F11) doesn't report the correct LXPC
+   value if it's >= 0xFF.  It reports 0x0FF as "LXPC: FFF" and leaves the
+   high nibble off of values >= 0x100 (so 0x123 appears as "LXPC: 023").
+
 2. Software modules.
 
    RabbitWeb gives a cryptic error message for buffer overflow when
@@ -907,5 +938,35 @@
     tcp_tick() while interface is powered down, or calling ifup() too soon
     after pd_powerup().  If this affects you, contact Digi and reference
     issue DC-300.
+
+30. The compiler incorrectly reports errors and warnings as occurring on line 1
+    if they are beyond line 32,767 of a file.  Limit file sizes by creating
+    .LIB modules loaded with #use, or .H header files loaded with #include.
+
+31. Compiler will report "Cannot load object, report to Rabbit." when trying
+    to compile (0 && j == 0) in the code below:
+
+        int foo(int i, int j) { return (i == 0 || (0 && j == 0)); }
+
+    This can occur when using constant macros to short-circuit conditionals
+    at compile time.  The workaround is to adapt the conditional using the
+    macro preprocessor.  In the example above:
+    
+        int foo(int i, int j) {
+            return (i == 0
+                #if FOO
+                    || (j == 0)
+                #endif
+                   );
+        }
+
+32. The "Start" button may be hidden on the main Rabbit Field Utility screen
+    when using certain Windows Display Scaling values (seen at 125% but not
+    199%).
+
+33. The command-line compiler fails on project files that contain multiple
+    .C files.  As a workaround, compile a single .C file that references
+    either libraries (with the #use directive) or .H files (with the #include
+    directive) for additional code.
 
 

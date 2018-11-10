@@ -14,11 +14,11 @@
    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 /**********************************************************************
-	Samples\AES_Enncryption\AES_CBC.c
+	Samples\AES_Encryption\AES_CBC.c
 
    This sample runs the test cases for AES CBC (Cipher-block Chaining)
    from RFC3602, both forward (encryption) and backward (decryption).
-   Unlike AES_KAT.C, the decryption step is separate from the encrryption
+   Unlike AES_KAT.C, the decryption step is separate from the encryption
    step.  For each case, the expected and calculated results are printed.
 
    Note that unlike the default CFB streams, CBC streams may not contain
@@ -28,7 +28,7 @@
 
    The sample cases are
 
-      case 1: one 16-byte (128 bit) block is encrypted or decrypted
+      case 1: one 16-byte (128 bit) block is encrypted / decrypted
       case 2: two 16-byte blocks (32 bytes) are encrypted / decrypted
       case 3: three 16-byte blocks (48 bytes) are encrypted / decrypted
       case 4: four 16-byte blocks (64 bytes) are encrypted / decrypted
@@ -56,13 +56,13 @@ const char iv1[AES_CBC_BLOCK_SIZE] = {
    '\x3d', '\xaf', '\xba', '\x42', '\x9d', '\x9e', '\xb4', '\x30',
    '\xb4', '\x22', '\xda', '\x80', '\x2c', '\x9f', '\xac', '\x41',
 };
-const char plntxt1[AES_CBC_BLOCK_SIZE * 1] =
+const far char plntxt1[AES_CBC_BLOCK_SIZE * 1] =
 {
    //"Single block msg" (no trailing '\0');
    'S', 'i', 'n', 'g', 'l', 'e', ' ', 'b',
    'l', 'o', 'c', 'k', ' ', 'm', 's', 'g',
 };
-const char cyptxt1[AES_CBC_BLOCK_SIZE * 1] = {
+const far char cyptxt1[AES_CBC_BLOCK_SIZE * 1] = {
    '\xe3', '\x53', '\x77', '\x9c', '\x10', '\x79', '\xae', '\xb8',
    '\x27', '\x08', '\x94', '\x2d', '\xbe', '\x77', '\x18', '\x1a',
 };
@@ -84,13 +84,13 @@ const char iv2[AES_CBC_BLOCK_SIZE] = {
    '\x56', '\x2e', '\x17', '\x99', '\x6d', '\x09', '\x3d', '\x28',
    '\xdd', '\xb3', '\xba', '\x69', '\x5a', '\x2e', '\x6f', '\x58',
 };
-const char plntxt2[AES_CBC_BLOCK_SIZE * 2] = {
+const far char plntxt2[AES_CBC_BLOCK_SIZE * 2] = {
    '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07',
    '\x08', '\x09', '\x0a', '\x0b', '\x0c', '\x0d', '\x0e', '\x0f',
    '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17',
    '\x18', '\x19', '\x1a', '\x1b', '\x1c', '\x1d', '\x1e', '\x1f',
 };
-const char cyptxt2[AES_CBC_BLOCK_SIZE * 2] = {
+const far char cyptxt2[AES_CBC_BLOCK_SIZE * 2] = {
    '\xd2', '\x96', '\xcd', '\x94', '\xc2', '\xcc', '\xcf', '\x8a',
    '\x3a', '\x86', '\x30', '\x28', '\xb5', '\xe1', '\xdc', '\x0a',
    '\x75', '\x86', '\x60', '\x2d', '\x25', '\x3c', '\xff', '\xf9',
@@ -120,13 +120,13 @@ const char iv3[AES_CBC_BLOCK_SIZE] = {
    '\xcd', '\x27', '\xd8', '\x25', '\x68', '\x2c', '\x81',
 };
 // :s/\(.\)/'\1', /g
-const char plntxt3[AES_CBC_BLOCK_SIZE * 3] = {
+const far char plntxt3[AES_CBC_BLOCK_SIZE * 3] = {
    'T', 'h', 'i', 's', ' ', 'i', 's', ' ', 'a', ' ', '4', '8', '-', 'b',
    'y', 't', 'e', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', '(', 'e',
    'x', 'a', 'c', 't', 'l', 'y', ' ', '3', ' ', 'A', 'E', 'S', ' ', 'b',
    'l', 'o', 'c', 'k', 's', ')',
 };
-const char cyptxt3[AES_CBC_BLOCK_SIZE * 3] = {
+const far char cyptxt3[AES_CBC_BLOCK_SIZE * 3] = {
    '\xd0', '\xa0', '\x2b', '\x38', '\x36', '\x45', '\x17', '\x53', '\xd4',
    '\x93', '\x66', '\x5d', '\x33', '\xf0', '\xe8', '\x86', '\x2d', '\xea',
    '\x54', '\xcd', '\xb2', '\x93', '\xab', '\xc7', '\x50', '\x69', '\x39',
@@ -154,7 +154,7 @@ const char key4[AES_CBC_BLOCK_SIZE] = {
 const char iv4[AES_CBC_BLOCK_SIZE] = {
    '\x8c', '\xe8', '\x2e', '\xef', '\xbe', '\xa0', '\xda', '\x3c', '\x44',
    '\x69', '\x9e', '\xd7', '\xdb', '\x51', '\xb7', '\xd9', };
-const char plntxt4[AES_CBC_BLOCK_SIZE * 4] = {
+const far char plntxt4[AES_CBC_BLOCK_SIZE * 4] = {
    '\xa0', '\xa1', '\xa2', '\xa3', '\xa4', '\xa5', '\xa6', '\xa7', '\xa8',
    '\xa9', '\xaa', '\xab', '\xac', '\xad', '\xae', '\xaf', '\xb0', '\xb1',
    '\xb2', '\xb3', '\xb4', '\xb5', '\xb6', '\xb7', '\xb8', '\xb9', '\xba',
@@ -164,7 +164,7 @@ const char plntxt4[AES_CBC_BLOCK_SIZE * 4] = {
    '\xd6', '\xd7', '\xd8', '\xd9', '\xda', '\xdb', '\xdc', '\xdd', '\xde',
    '\xdf',
 };
-const char cyptxt4[AES_CBC_BLOCK_SIZE * 4] = {
+const far char cyptxt4[AES_CBC_BLOCK_SIZE * 4] = {
    '\xc3', '\x0e', '\x32', '\xff', '\xed', '\xc0', '\x77', '\x4e', '\x6a',
    '\xff', '\x6a', '\xf0', '\x86', '\x9f', '\x71', '\xaa', '\x0f', '\x3a',
    '\xf0', '\x7a', '\x9a', '\x31', '\xa9', '\xc6', '\x84', '\xdb', '\x20',
@@ -177,154 +177,63 @@ const char cyptxt4[AES_CBC_BLOCK_SIZE * 4] = {
 
 /* End of constants */
 
-int main(void) {
-   auto int i;
-   auto char text[256];
+int test(int test_case, const char *key, const char *iv,
+          const far char *plain, const far char *encrypted, int size)
+{
    auto AESstreamState state;
+   auto char text[256];
+   auto failures = 0;
+   
+   if (size > sizeof text) {
+      printf("Test case %d too big (%d bytes), skipped\n", test_case, size);
+      return 1;
+   }
+   printf("Test case %d - encrypt %d bytes\n", test_case, size);
+   AESinitStream(&state, key, iv);
 
-   // Test case 1 - encrypt
-   printf("Test case 1 - encrypt \n");
-   AESinitStream(&state, key1, iv1);
-
-   memcpy(text, plntxt1, sizeof(plntxt1));
-   AESencryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE);
+   _f_memcpy(text, plain, size);
+   AESencryptStream_CBC(&state, text, size);
    printf("Encrypted text:\n");
-   for (i = 0; i < sizeof(plntxt1); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(cyptxt1); i++) {
-      printf("%02x.", (int) cyptxt1[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
+   mem_dump(text, size);
+   if (_f_memcmp(text, encrypted, size) != 0) {
+   	++failures;
+      printf("Did not match expected result:\n");
+      mem_dump(encrypted, size);
    }
    printf("\n");
 
-   // Test case 2 - encrypt
-   printf("Test case 2 - encrypt \n");
-   AESinitStream(&state, key2, iv2);
+   printf("Test case %d - decrypt %d bytes\n", test_case, size);
+   AESinitStream(&state, key, iv);
 
-   memcpy(text, plntxt2, sizeof(plntxt2));
-   AESencryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 2);
-   printf("Encrypted text:\n");
-   for (i = 0; i < sizeof(plntxt2); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(cyptxt2); i++) {
-      printf("%02x.", (int) cyptxt2[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   // Test case 3 - encrypt
-   printf("Test case 3 - encrypt \n");
-   AESinitStream(&state, key3, iv3);
-
-   memcpy(text, plntxt3, sizeof(plntxt3));
-   AESencryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 3);
-   printf("Encrypted text:\n");
-   for (i = 0; i < sizeof(plntxt3); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(cyptxt3); i++) {
-      printf("%02x.", (int) cyptxt3[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   // Test case 4 - encrypt
-   printf("Test case 4 - encrypt \n");
-   AESinitStream(&state, key4, iv4);
-
-   memcpy(text, plntxt4, sizeof(plntxt4));
-   AESencryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 4);
-   printf("Encrypted text:\n");
-   for (i = 0; i < sizeof(plntxt4); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(cyptxt4); i++) {
-      printf("%02x.", (int) cyptxt4[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   // Test case 1 - decrypt
-   printf("Test case 1 - decrypt \n");
-   AESinitStream(&state, key1, iv1);
-
-   memcpy(text, cyptxt1, sizeof(cyptxt1));
-   AESdecryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE);
+   _f_memcpy(text, encrypted, size);
+   AESdecryptStream_CBC(&state, text, size);
    printf("Decrypted text:\n");
-   for (i = 0; i < sizeof(cyptxt1); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(plntxt1); i++) {
-      printf("%02x.", (int) plntxt1[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
+   mem_dump(text, size);
+   if (_f_memcmp(text, plain, size) != 0) {
+   	++failures;
+      printf("Did not match expected result:\n");
+      mem_dump(plain, size);
    }
    printf("\n");
-
-   // Test case 2 - decrypt
-   printf("Test case 2 - decrypt \n");
-   AESinitStream(&state, key2, iv2);
-
-   memcpy(text, cyptxt2, sizeof(cyptxt2));
-   AESdecryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 2);
-   printf("Decrypted text:\n");
-   for (i = 0; i < sizeof(cyptxt2); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(plntxt2); i++) {
-      printf("%02x.", (int) plntxt2[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   // Test case 3 - decrypt
-   printf("Test case 3 - decrypt \n");
-   AESinitStream(&state, key3, iv3);
-
-   memcpy(text, cyptxt3, sizeof(cyptxt3));
-   AESdecryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 3);
-   printf("Decrypted text:\n");
-   for (i = 0; i < sizeof(cyptxt3); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(plntxt3); i++) {
-      printf("%02x.", (int) plntxt3[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   // Test case 4 - decrypt
-   printf("Test case 4 - decrypt \n");
-   AESinitStream(&state, key4, iv4);
-
-   memcpy(text, cyptxt4, sizeof(cyptxt4));
-   AESdecryptStream_CBC(&state, text, AES_CBC_BLOCK_SIZE * 4);
-   printf("Decrypted text:\n");
-   for (i = 0; i < sizeof(cyptxt4); i++) {
-      printf("%02x.", (int) text[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("Expected text:\n");
-   for (i = 0; i < sizeof(plntxt4); i++) {
-      printf("%02x.", (int) plntxt4[i]);
-      if (0 == ((i+1) % AES_CBC_BLOCK_SIZE)) printf("\n");
-   }
-   printf("\n");
-
-   return 0;
+   
+   return failures;
 }
+
+int main(void)
+{
+	int failures = 0;
+	
+	failures += test(1, key1, iv1, plntxt1, cyptxt1, sizeof plntxt1);
+	failures += test(2, key2, iv2, plntxt2, cyptxt2, sizeof plntxt2);
+	failures += test(3, key3, iv3, plntxt3, cyptxt3, sizeof plntxt3);
+	failures += test(4, key4, iv4, plntxt4, cyptxt4, sizeof plntxt4);
+	
+	if (failures) {
+		printf("FAIL - %d tests failed\n", failures);
+	} else {
+		printf("PASS\n");
+	}
+	
+   return failures;
+}
+
