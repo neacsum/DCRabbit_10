@@ -58,7 +58,7 @@ PARAMETERS:
     size      string size for JT_STR and JT_PSTR variables
 
 END DESCRIPTION **********************************************************/
-#define JSD(V,T, C, S) {#V, &##V, T, S, C}
+#define JSD(V, T, C, S) {#V, &##V, T, S, C}
 
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -87,7 +87,7 @@ PARAMETERS:
     size      string size for JT_STR and JT_PSTR variables
 
 END DESCRIPTION **********************************************************/
-#define JSDN(V,N,C,T) {#N, &##V, T, 0, C}
+#define JSDN(V, N, T, C, S) {#N, &##V, T, S, C}
 
 
 #undef DPRINTF
