@@ -543,6 +543,33 @@ typedef struct HttpState_t {
 
 } HttpState;
 
+#ifdef HTTP_VERBOSE
+  const char far *state_name[] = {
+    "INIT",
+    "_LISTEN",
+    "LISTEN",
+    "GETREQ",
+    "GETHEAD",
+    "HANDLEPOST",
+    "PROCESS",
+    "SENDPAGE",
+    "HANDLER",
+    "WAITCLOSE",
+    "FINISHWRITE",
+    "DIE",
+    "OLDCGI",
+    "CGI_PROLOG",
+    "CGI_PARTHEAD",
+    "CGI_PARTDATA",
+    "CGI_EPILOG",
+    "CGI_END",
+    "CGI_CONTINUE",
+    "CGI_SENDBUF",
+    "CGI_SENDMORE",
+    "REALLY_DIE",
+    "WAIT_CN"
+  };
+#endif
 
 int _http_uid_anon;
 
@@ -3083,6 +3110,7 @@ _http_nodebug int http_init(void)
 
    HTTP_FORALL_SERVERS
       state->state=HTTP_INIT;
+      state->laststate=HTTP_INIT;      
    	if (_http_init_1st_time) {
    		state->extbuf = NULL;
    		state->extlen = 0;
@@ -3355,7 +3383,7 @@ _http_nodebug int http_handler(void)
 		if(h->state != h->laststate) {
 			/* state changed; reset timeout */
 #ifdef HTTP_VERBOSE
-		 	printf("HTTP: state changed to %u->%u\n", h->laststate, h->state);
+		 	printf("HTTP: state changed to %Fs->%Fs\n", state_name[h->laststate], state_name[h->state]);
 #endif
 			h->laststate = h->state;
 			h->main_timeout = set_timeout(HTTP_TIMEOUT);
