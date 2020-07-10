@@ -167,52 +167,30 @@ int jsonify (HttpState *state, void *addr)
 /* Convert a string to JSON format quoting chars that need quoting */
 void json_str (char __far *p, char *str)
 {
+  const char *q_in = "\n\r\b\f\"\\";
+  const char *q_out = "nrbf\"\\";
+  int i;
   *p++ = '"';
   while (*str)
   {
-    if (*str == '\n')
+    for (i=0; q_in[i]; i++)
     {
-      *p++ = '\\';
-      *p++ = 'n';
+      if (*str == q_in[i])
+      {
+        *p++ = '\\';
+        *p = q_out[i];
+        break;
+      }
     }
-    else if (*str == '\b')
-    {
-      *p++ = '\\';
-      *p++ = 'n';
-    }
-    else if (*str == '\r')
-    {
-      *p++ = '\\';
-      *p++ = 'r';
-    }
-    else if (*str == '\f')
-    {
-      *p++ = '\\';
-      *p++ = 'f';
-    }
-    else if (*str == '\t')
-    {
-      *p++ = '\\';
-      *p++ = 't';
-    }
-    else if (*str == '"')
-    {
-      *p++ = '\\';
-      *p++ = '"';
-    }
-    else if (*str == '\\')
-    {
-      *p++ = '\\';
-      *p++ = '\\';
-    }
-    else
+    if (!q_in[i])
       *p = *str;
-    str++;
+    *str++;
+    *p++;
   }
   *p++ = '"';
   *p = 0;
 }
-  
+
 /* START FUNCTION DESCRIPTION ************************************************
 json_serialize                                           <json.lib>
 
@@ -295,7 +273,7 @@ int json_serialize (__far char* *pptr, void *addr)
   *p++ = ',';
   *pptr = p;
   return 0;
-  
+
 }
 
 /* START FUNCTION DESCRIPTION ************************************************
