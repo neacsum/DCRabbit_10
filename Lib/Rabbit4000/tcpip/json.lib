@@ -101,6 +101,7 @@ END DESCRIPTION **********************************************************/
 
 /*** BeginHeader json_begin, json_end, jsonify*/
 void json_begin (HttpState *state);
+int json_serialize (__far char* *pptr, void *addr);
 int jsonify (HttpState *state, void *addr);
 void json_end (HttpState *state);
 
@@ -143,7 +144,7 @@ void json_begin (HttpState *state)
 /* START FUNCTION DESCRIPTION ************************************************
 jsonify                                           <json.lib>
 
-  Description:  Serializes a variable to JSON format
+  Description:  Serializes a variable to JSON format 
 
   Syntax:       int jsonify (HttpState *state, void *var)
 
@@ -158,9 +159,81 @@ jsonify                                           <json.lib>
 END DESCRIPTION *************************************************************/
 int jsonify (HttpState *state, void *addr)
 {
+  return json_serialize (&state->p, addr);
+  return 0;
+}
+
+
+/* Convert a string to JSON format quoting chars that need quoting */
+void json_str (char __far *p, char *str)
+{
+  *p++ = '"';
+  while (*str)
+  {
+    if (*str == '\n')
+    {
+      *p++ = '\\';
+      *p++ = 'n';
+    }
+    else if (*str == '\b')
+    {
+      *p++ = '\\';
+      *p++ = 'n';
+    }
+    else if (*str == '\r')
+    {
+      *p++ = '\\';
+      *p++ = 'r';
+    }
+    else if (*str == '\f')
+    {
+      *p++ = '\\';
+      *p++ = 'f';
+    }
+    else if (*str == '\t')
+    {
+      *p++ = '\\';
+      *p++ = 't';
+    }
+    else if (*str == '"')
+    {
+      *p++ = '\\';
+      *p++ = '"';
+    }
+    else if (*str == '\\')
+    {
+      *p++ = '\\';
+      *p++ = '\\';
+    }
+    else
+      *p = *str;
+    str++;
+  }
+  *p++ = '"';
+  *p = 0;
+}
+  
+/* START FUNCTION DESCRIPTION ************************************************
+json_serialize                                           <json.lib>
+
+  Description:  Serializes a variable to JSON format
+
+  Syntax:       int jsonify (__far char* *pptr, void *var)
+
+  Parameters:
+      pptr      pointer to output buffer
+      var       variable to serialize
+
+  Return:       0 if successful
+                -1  = variable not found in JSON data dictionary
+
+END DESCRIPTION *************************************************************/
+int json_serialize (__far char* *pptr, void *addr)
+{
   const JSONVAR *entry;
   int i;
-  __far char *p;
+  __far char *p = *pptr;
+  char *ptr;
 
   for (entry=json_dict; entry->name && entry->addr != addr; entry++)
     ;
@@ -170,7 +243,6 @@ int jsonify (HttpState *state, void *addr)
     DPRINTF (("Missing dictionary entry!!"));
     return -1;   //oops! entry not found
   }
-  p = state->p;
 
   *p++ = '"';
   _f_strcpy (p, entry->name);
@@ -187,10 +259,10 @@ int jsonify (HttpState *state, void *addr)
     switch (entry->type)
     {
       case JT_PSTR:
-        sprintf (p, "\"%s\"", *(char**)addr);
+        json_str (p, *(char**)addr);
         break;
       case JT_STR:
-        sprintf (p, "\"%s\"", (char*)addr);
+        json_str (p, addr);
         break;
       case JT_INT:
         sprintf (p, "%d", *(int*)addr);
@@ -221,8 +293,9 @@ int jsonify (HttpState *state, void *addr)
     *p++ = ']';
 
   *p++ = ',';
-  state->p = p;
+  *pptr = p;
   return 0;
+  
 }
 
 /* START FUNCTION DESCRIPTION ************************************************
