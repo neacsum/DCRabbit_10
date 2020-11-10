@@ -1,3 +1,18 @@
+# Fork of Dynamic C 10 #
+This is forked from [Digi International Dynamic C 10 repository](https://github.com/digidotcom/DCRabbit_10). As far as possible I'll keep it in sync with the original but cannot make promises.
+
+Rabbit is dead! A few of us have to live with the dead Rabbit and make some old projects work.
+
+New things you can find here:
+
+- An NTP client in NTP.LIB. Allows you to get accurate time from NTP servers.
+- A new way of building web interfaces using a *JSON Bridge* - a simple mechanism to provide access to program variables. See [this file](https://github.com/neacsum/DCRabbit_10/blob/master/doc/Using%20JSON%20for%20Rabbit%20Web%20Interface.md) for more information.
+
+
+Bellow is the unmodified README file from Digi.
+
+---
+
 # Dynamic C 10
 ## for Rabbit-based embedded systems
 
