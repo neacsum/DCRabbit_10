@@ -1,23 +1,19 @@
 /*
   sample_drinks.c - Using JSON interface in combination with
   Drinks Toolkit from GoinCompany (http://www.goincompany.com/drinks.php)
-  
+
   (c) Mircea Neacsu 2016
 
   It is curently configured for an RCM4200 module that has some voltages
   between 0 and 5V applied to AIN0 to AIN3. Modifying it for a different
   board should be trivial.
-  
-  The analog voltages are scaled to some real world units and shown on 
-  some Drinks instruments. 
+
+  The analog voltages are scaled to some real world units and shown on
+  some Drinks instruments.
 */
 
 //standard stuff for network and HTTP server configuration
 #define TCPCONFIG             1
-#define _PRIMARY_STATIC_IP    "192.168.3.101"
-#define _PRIMARY_NETMASK      "255.255.255.0"
-#define MY_NAMESERVER         "8.8.8.8"
-#define MY_GATEWAY            "192.168.3.1"
 
 #define TIMEZONE              -5
 #define HTTP_PORT             80
@@ -119,9 +115,9 @@ int main ()
         v[i] = anaInVolts (i, 2); //read voltage 0 to 5.6V
       hg = v[0] / 5 * 30.;    //first channel is scaled 0 to 30
       psi = v[1] / 5 * 50.;   // 2nd channel is 0 to 50
-      rpm = v[2] /5 * 5000.;  //3rd channel is 0 to 5000      
+      rpm = v[2] /5 * 5000.;  //3rd channel is 0 to 5000
     }
-    
+
     http_handler ();
   }
   return 0;
