@@ -3,7 +3,7 @@
 This document describes a data formatting library for Rabbit and its use to create portable and efficient Web user interfaces.
 
 ## Introduction ##
-For me, one of the advantages of the Rabbit ecosystem is the included HTTP server that allows the construction of a user interface without having to connect any display, keyboard, buttons and LEDs. Web based user interfaces are much cheaper in production but I’ve always struggled with the time and effort required to build them. Looking at the Rabbit libraries one can see that Z-World (and latter Digi) had the same kind of struggle. The biggest problem is how to provide access to the program variables from the user interface layer and conversely, how to pass the user information back to the program.
+One of the advantages of the Rabbit ecosystem is the included HTTP server that allows the construction of a user interface without having to connect any display, keyboard, buttons and LEDs. Web based user interfaces are much cheaper in production but I’ve always struggled with the time and effort required to build them. Looking at the Rabbit libraries one can see that Z-World (and latter Digi) had the same kind of struggle. The biggest problem is how to provide access to the program variables from the user interface layer and conversely, how to pass the user information back to the program.
 
 A first method that appeared was to use “server-side includes” (SSI) variables to send the data to the user interface and some kind of form parsing to retrieve the user information. The method was clunky and required the HTTP server code to parse the pages that contained dynamic information every time it was serving them (see function `shtml_parse` in HTTP library).
 
@@ -108,7 +108,6 @@ const char *varr[] = {"A few strings", "scattered in flash", "shown on WEB page"
 ```
 Arrays organized in the first way have to be declared using the type `JT_STR` while the second one is declared using the `JT_PSTR` type.
 
-
 ### Retrieving data from WEB form ###
 When user presses the submit button of a form, the browser first invokes the `onsubmit` action. This in turn calls the `vaildate_form1` function. In general the validation function should check all values to see if they are within limits. Sometimes, to do the validation, you need other values that are inside the program but do not appear in the web page. You can just include those values in the data sent by the server to the web page.
 
@@ -145,6 +144,143 @@ The `url_post` function that takes care of parsing the URL encoded data and upda
 The URL encoding system has no concept of arrays so we have to come up with a convention for encoding array elements. By convention, the name of an array element is “`rray_<index>`. For instance (looking at `page2.html`) the elements of `iarr` array are “iarr_0”, “iarr_1”, and so on. The `url_post` function parses these keys in the URL encoded post and updates the appropriate variables. If the variable name contains underscores but doesn’t conform to the `array_<index>` pattern, it is processed like any regular variable (i.e. the whole name is searched in the JSON data dictionary).
 
 Adding arrays to the parser brought a few extra wrinkles. Buffer overflow errors are so common that I felt the best place to handle them was in the parser itself instead of leaving the burden to the user. Hence parser checks the received array indices and ignores values above the specified array limits. Also for strings it checks the size of each element and truncates it to the declared size.
+
+## Reworking a standard sample ##
+For our next example, let's take the `HUMIDITY.C` sample (from `samples\tcpip\rabbitweb`) and convert it to use our JSON library. The resulting file, `humidity_json.c` can be found in `samples\tcpip\json`.
+
+The application has two pages, `humidity_monitor.html` and `humidity_admin.html`. The first one is only retrieving data from the server, while the second one is also sending data back in response to form submission.
+
+### Loading Data to Web Pages ###
+The JavaScript code for retrieving data from server is fairly standard. Below is the code from the `humidity_admin.html` page:
+```JS
+  var xhr = new XMLHttpRequest;
+  var servdata;
+  var nodata=  '{"hum_alarm": 60,"alarm_email": "bob@example.com", "alarm_interval": 60}';
+
+  function init ()
+  {
+    xhr.onreadystatechange = function ()
+    {
+      if (xhr.readyState == 4)
+      {
+        if (xhr.status == 200)
+          servdata = JSON.parse(xhr.responseText);
+        else
+          servdata = JSON.parse(nodata);
+        set_fields();
+      }
+    }
+    xhr.open("GET", "/getadmin.cgi", true);
+    xhr.timeout = 2000;
+    try {
+      xhr.send();
+    } catch (err) {
+      servdata = JSON.parse(nodata);
+      set_fields ();      
+    }    
+  }
+```
+The `XMLHttpRequest` object sends a GET request to `/getadmin.cgi` and expects a JSON formatted reply. It parses the reply in the `servdata` variable and invokes the `set_fields()` function transfer the data to the page. If something goes wrong, it parses the `nodata` string instead of the server reply. This could happen when the server is not accessible.
+
+The `set_fileds()` function simply populates the page with the received values:
+```JS
+  function set_fields()
+  {
+    document.getElementById("hum_alarm").value = servdata["hum_alarm"];
+    document.getElementById("alarm_email").value = servdata["alarm_email"];
+    document.getElementById("alarm_interval").value = servdata["alarm_interval"];    
+  }
+```
+On the server side, the `cgi_getadmin()` function simply retrieves the required data and formats it as a JSON string:
+```C
+int cgi_getadmin (HttpState *state)
+{
+  json_begin (state);
+  jsonify (state, &hum_alarm);
+  jsonify (state, &alarm_email);
+  jsonify (state, &alarm_interval);
+  json_end (state);
+  return 1;
+}
+```
+
+### Posting Data Back to Server ###
+When form submit button is pressed it invokes the `onsubmit` event handler. In turn, this one calls the `validate()` function:
+```JS
+  function validate ()
+  {
+    var err = false;
+    
+    // validate alarm value
+    val = document.getElementById("hum_alarm").value;
+    if (val < 0 || val > 100)
+    {
+      document.getElementById("hum_entry").style.color = "red";
+      err = true;
+    }
+    else
+      document.getElementById("hum_entry").style.color = "initial";
+      
+    // validate alarm interval
+    val = document.getElementById("alarm_interval").value;
+    if (val <0 || val >300000)
+    {
+      document.getElementById("interval_entry").style.color = "red";
+      err = true;    
+    }
+    else
+      document.getElementById("interval_entry").style.color = "initial";
+
+    //validate email address
+    email_pattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (!document.getElementById ("alarm_email").value.match(email_pattern))
+    {
+      document.getElementById("email_entry").style.color = "red";
+      err = true;        
+    }
+    else
+      document.getElementById("email_entry").style.color = "initial";
+    
+    
+    if (err)
+    {
+      document.getElementById("err_message").style.color = "red";
+      document.getElementById("err_message").innerHTML = "ERROR!  Your submission contained errors.  Please correct the entries marked in red below.";
+    }
+    else
+      document.getElementById("err_message").innerHTML = "";
+    return !err;
+  }
+```
+If you compare the validations performed by this function with the RabbitWeb version, you will notice that the RabbitWeb version does not validate the email address. Regular expressions are way above what the zscript
+engine can do. Note also that all the validations are done on the client side without any load placed on the
+server.
+
+If the data has been validated, it is sent to the `/admin/setadmin.cgi` CGI function. On the server side this invokes the `cgi_setadmin()` function:
+```C
+int cgi_setadmin (HttpState *state)
+{
+  url_post (state);
+  cgi_redirectto (state, "/admin/index.html");
+  printf ("New alarm level is %d\nSending emails to: %s\n",
+    hum_alarm, alarm_email);
+  return 0;
+}
+```
+Received data is parsed from the URL-encoded format and placed in the corresponding variables. The HHTP server is redirected to reload the Web page.
+
+### Memory Usage and Execution Time ###
+On a RCM4200 module, the RabbitWeb sample uses about 200k of memory:
+![](mem_humi_rweb.png)
+
+The JSON version uses almost 136k. That is a cool 64k of space saved:
+![](mem_humi_json.png)
+
+Time-wise, the RabbitWeb page loads in 30ms:
+![](time_humi_rweb.png)
+which is the same as the JSON version: 
+![](time_humi_json.png)
+
 
 ## Reference ##
 ### `json_begin` ###

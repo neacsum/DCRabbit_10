@@ -1,0 +1,121 @@
+<!-- This page shows how to create a simple configuration interface using the
+     JSON library.  Each variable has its current value displayed
+     and also allows the values to be updated.  When the user submits the form,
+     if there are errors in that submission, then this form is redisplyed.
+     However, when it is redisplayed, it will inform the user that there were
+     errors, and the variables that are in error will be marked in red. -->
+
+<HTML>
+<HEAD>
+  <TITLE>Configure the humidity device</TITLE>
+  <script>
+  var xhr = new XMLHttpRequest;
+  var servdata;
+  var nodata=  '{"hum_alarm": 60,"alarm_email": "bob@example.com", "alarm_interval": 60}';
+
+  function init ()
+  {
+    xhr.onreadystatechange = function ()
+    {
+      if (xhr.readyState == 4)
+      {
+        if (xhr.status == 200)
+          servdata = JSON.parse(xhr.responseText);
+        else
+          servdata = JSON.parse(nodata);
+        set_fields();
+      }
+    }
+    xhr.open("GET", "/getadmin.cgi", true);
+    xhr.timeout = 2000;
+    try {
+      xhr.send();
+    } catch (err) {
+      servdata = JSON.parse(nodata);
+      set_fields ();      
+    }    
+  }
+    
+  function set_fields()
+  {
+    document.getElementById("hum_alarm").value = servdata["hum_alarm"];
+    document.getElementById("alarm_email").value = servdata["alarm_email"];
+    document.getElementById("alarm_interval").value = servdata["alarm_interval"];    
+  }
+  
+  function validate ()
+  {
+    var err = false;
+    
+    // validate alarm value
+    val = document.getElementById("hum_alarm").value;
+    if (val < 0 || val > 100)
+    {
+      document.getElementById("hum_entry").style.color = "red";
+      err = true;
+    }
+    else
+      document.getElementById("hum_entry").style.color = "initial";
+      
+    // validate alarm interval
+    val = document.getElementById("alarm_interval").value;
+    if (val <0 || val >300000)
+    {
+      document.getElementById("interval_entry").style.color = "red";
+      err = true;    
+    }
+    else
+      document.getElementById("interval_entry").style.color = "initial";
+
+    //validate email address
+    email_pattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (!document.getElementById ("alarm_email").value.match(email_pattern))
+    {
+      document.getElementById("email_entry").style.color = "red";
+      err = true;        
+    }
+    else
+      document.getElementById("email_entry").style.color = "initial";
+    
+    
+    if (err)
+    {
+      document.getElementById("err_message").style.color = "red";
+      document.getElementById("err_message").innerHTML = "ERROR!  Your submission contained errors.  Please correct the entries marked in red below.";
+    }
+    else
+      document.getElementById("err_message").innerHTML = "";
+    return !err;
+  }
+  </script>
+</HEAD>
+<BODY onload="init()">
+<H1>Configure the humidity device</H1>
+<span id="err_message"></span>
+<FORM ACTION="/admin/setadmin.cgi" METHOD="POST" onsubmit="return validate()">
+<P>
+
+<span id="hum_entry">
+  Humidity alarm level (percent):
+  <INPUT TYPE="text" id="hum_alarm" NAME="hum_alarm" SIZE=3 style="color:inherit" />
+</span>
+<P>
+<span id="email_entry">
+  Send email alarm to:
+  <INPUT TYPE="text" id="alarm_email" NAME="alarm_email" SIZE=50 style="color:inherit" />
+</span>
+
+<P>
+<span id="interval_entry">
+  Minimum time between alarms (minutes):
+  <INPUT TYPE="text" id="alarm_interval" NAME="alarm_interval" SIZE=5 style="color:inherit" />
+</span>
+<P>
+<INPUT TYPE="submit" VALUE="Submit" />
+</FORM>
+
+<P>
+<A HREF="/index.html">Return to the humidity monitor page</A>
+</BODY>
+</HTML>
+
