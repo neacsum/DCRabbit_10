@@ -1,0 +1,52 @@
+<!-- This file simply shows how to display a variable using JSON library. -->
+
+<HTML>
+<HEAD>
+<TITLE>Current humidity reading</TITLE>
+<script>
+  var xhr = new XMLHttpRequest;
+  var servdata;
+  var nodata= '{"hum": 99}';
+
+  function init ()
+  {
+    xhr.onreadystatechange = function ()
+    {
+      if (xhr.readyState == 4)
+      {
+        if (xhr.status == 200)
+          servdata = JSON.parse(xhr.responseText);
+        else
+          servdata = JSON.parse(nodata);          
+        set_fields();
+      }
+    }
+    xhr.open("GET", "/gethum.cgi", true);
+    xhr.timeout = 2000;
+    try {
+      xhr.send();
+    } catch (err) {
+      servdata = JSON.parse(nodata);
+      set_fields ();      
+    }    
+  }
+    
+  function set_fields()
+  {
+    document.getElementById("hum").innerHTML = servdata["hum"];
+  }
+</script>
+</HEAD>
+<BODY onload="init()">
+<H1>Current humidity reading</H1>
+
+The current humidity reading is (in percent):
+<span id="hum"></span>
+
+<P>
+<!-- This simply provides a link to the admin page, which is
+     password-protected. -->
+<A HREF="/admin/index.html">Change the device settings</A>
+</BODY>
+</HTML>
+

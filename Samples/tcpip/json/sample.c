@@ -12,10 +12,6 @@
 
 //standard stuff for network and HTTP server configuration
 #define TCPCONFIG             1
-#define _PRIMARY_STATIC_IP    "192.168.3.101"
-#define _PRIMARY_NETMASK      "255.255.255.0"
-#define MY_NAMESERVER         "8.8.8.8"
-#define MY_GATEWAY            "192.168.3.1"
 
 #define TIMEZONE              -5
 #define HTTP_PORT             80
@@ -98,7 +94,7 @@ JSD_START
   JSD (farr,    JT_FLT,   COUNTOF(farr), 0),
   JSD (str,     JT_STR,   1,             sizeof(str)),
   JSD (sarr,    JT_STR,   COUNTOF(sarr), sizeof(sarr[0])),
-  JSD (varr,    JT_PSTR,  COUNTOF(varr), 0), 
+  JSD (varr,    JT_PSTR,  COUNTOF(varr), 0),
   JSD (iarr_a,  JT_STR,   1,             sizeof(iarr_a)),
 JSD_END;
 
@@ -106,17 +102,17 @@ JSD_END;
 
   1. Differences between JT_STR and JT_PSTR. 'sarr' is an array of 5 strings
   each 80 characters long and is declared in the data dictionary as a JT_STR
-  entry with 5 elements, each 80 bytes long. Meanwhile 'varr' is simply an 
-  array of pointers to strings and it is declared as a JT_PSTR entry. The 
+  entry with 5 elements, each 80 bytes long. Meanwhile 'varr' is simply an
+  array of pointers to strings and it is declared as a JT_PSTR entry. The
   most appropriate representaion depends on application.
-  
+
   2. The size of each element of 'varr' is not important in this case as the strings
   are in flash and cannot be updated. If they would need to be updated the max size
   of each string would need to be specified.
-  
+
   3. 'iarr_a' is included just to show that the parser can handle names with underscores
   that do not conform to <array>_<index> pattern.
-  
+
   4. The 'url_post' parser parses the keys in the order they are received which
   in turn is the order the fields are layed out in the web form. Fileds with
   same name will hence use the value of the LAST field with that name. This is
