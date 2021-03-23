@@ -1,6 +1,6 @@
 /*
   sample_drinks.c - Using JSON interface in combination with
-  Drinks Toolkit from GoinCompany (http://www.goincompany.com/drinks.php)
+  Drinks Toolkit (https://github.com/drinkstoolkit/drinks)
 
   (c) Mircea Neacsu 2016
 
@@ -27,9 +27,9 @@
 #use "rcm42xx.lib"
 
 //the HTML pages served by this program
-#ximport "pagedrinks.html" pagedrinks_html
-#ximport "drinks.js" drinks_js
-#ximport "display.js" display_js
+#ximport "pages/pagedrinks.html" pagedrinks_html
+#ximport "pages/drinks.js" drinks_js
+#ximport "pages/display.js" display_js
 
 //prototypes
 int cgi_getpagedrinks (HttpState *state);

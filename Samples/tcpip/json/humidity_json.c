@@ -50,7 +50,7 @@
 #define TCPCONFIG 1
 
 //max path name
-#define SSPEC_MAXNAME	40
+#define SSPEC_MAXNAME  40
 
 /********************************
  * End of configuration section *
@@ -67,13 +67,13 @@
  * These pages contain the HTML portion of the demonstration.  The first has
  * a status page, while the second has a configuration interface.
  */
-#ximport "samples/tcpip/json/pages/humidity_monitor.html"	monitor_html
-#ximport "samples/tcpip/json/pages/humidity_admin.html"		admin_html
+#ximport "samples/tcpip/json/pages/humidity_monitor.html"  monitor_html
+#ximport "samples/tcpip/json/pages/humidity_admin.html"    admin_html
 
 
 /* The default mime type for '/' must be first */
 SSPEC_MIMETABLE_START
-	SSPEC_MIME(".html", "text/html")
+  SSPEC_MIME(".html", "text/html")
 SSPEC_MIMETABLE_END
 
 // Prototype for user interface functions
@@ -85,8 +85,8 @@ int cgi_setadmin (HttpState *state);
 
 /* Associate the #ximported files with the web server */
 SSPEC_RESOURCETABLE_START
-	SSPEC_RESOURCE_XMEMFILE("/index.html", monitor_html),
-	SSPEC_RESOURCE_XMEMFILE("/admin/index.html", admin_html),
+  SSPEC_RESOURCE_XMEMFILE("/index.html", monitor_html),
+  SSPEC_RESOURCE_XMEMFILE("/admin/index.html", admin_html),
   SSPEC_RESOURCE_FUNCTION("/gethum.cgi", cgi_gethum),
   SSPEC_RESOURCE_FUNCTION("/getadmin.cgi", cgi_getadmin),
   SSPEC_RESOURCE_FUNCTION("/admin/setadmin.cgi", cgi_setadmin),
@@ -117,39 +117,33 @@ void main(void)
 {
    int userid;
 
-	// Initialize the values
-	hum = 50;
-	hum_alarm = 75;
-	alarm_interval = 60;
-	strcpy(alarm_email, "somebody@nowhere.org");
+  // Initialize the values
+  hum = 50;
+  hum_alarm = 75;
+  alarm_interval = 60;
+  strcpy(alarm_email, "somebody@nowhere.org");
 
-	// Initialize the TCP/IP stack and HTTP server
-	// Start network and wait for interface to come up (or error exit).
-	sock_init_or_exit(1);
-   http_init();
+  // Initialize the TCP/IP stack and HTTP server
+  // Start network and wait for interface to come up (or error exit).
+  sock_init_or_exit(1);
+  http_init();
+  tcp_reserveport(80);
 
-   // If the browser specifies a directory (instead of a proper resource name)
-   // default to using "index.zhtml" in that directory, if it exists.
-   // If we don't use this function, the default is "index.html" which won't
-   // work for this sample.
-   http_set_path("/", "index.html");
-
-	tcp_reserveport(80);
-
-	// The following line limits access to the "/admin" directory to the admin
-	// group.  It also requires basic authentication for the "/admin"
-	// directory.
+  // The following line limits access to the "/admin" directory to the admin
+  // group.  It also requires basic authentication for the "/admin"
+  // directory.
    sspec_addrule("/admin", "Admin", ADMIN, ADMIN, SERVER_ANY,
                  SERVER_AUTH_BASIC, NULL);
-	// The following two lines create an "admin" user and adds it to the admin
-	// group.
-   userid = sauth_adduser("harpo", "swordfish", SERVER_ANY);
-   sauth_setusermask(userid, ADMIN, NULL);
+                 
+  // The following two lines create an "admin" user and adds it to the admin
+  // group.
+  userid = sauth_adduser("harpo", "swordfish", SERVER_ANY);
+  sauth_setusermask(userid, ADMIN, NULL);
 
-	// This drives the HTTP server.
-   while(1) {
-      http_handler();
-   }
+  // This drives the HTTP server.
+  while(1){
+    http_handler();
+  }
 }
 
 // Retrives data for the 'humidity_monitor' page

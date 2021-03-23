@@ -24,8 +24,8 @@
 #use "json.lib"
 
 //the HTML pages served by this program
-#ximport "page1.html" page1_file
-#ximport "page2.html" page2_file
+#ximport "pages/page1.html" page1_file
+#ximport "pages/page2.html" page2_file
 
 //prototypes
 int cgi_getpage1 (HttpState *state);

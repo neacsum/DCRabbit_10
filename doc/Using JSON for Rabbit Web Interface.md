@@ -58,7 +58,7 @@ int cgi_getpage1 (HttpState *state)
 The first function `json_begin` initializes the output buffer with the reply headers. Each of the following calls to `jsonify` function appends a JSON-formatted variable to the output buffer. Note how we can use the `nodata` variable from the web page to guide us what information we need to output. Finally the `json_end` function finishes the output buffer and sends it back to the Web page.
 
 ### JSON Data Dictionary ###
-The magic done by `jsonify` function needs a little bit of support from a data structure called *data dictionary*. This is an array where each entry describes a variable that can be formatted and sent out. Here is the structure of such an entry:
+The magic done by `jsonify` function needs some support from a data structure called *data dictionary*. This is an array where each entry describes a variable that can be formatted and sent out. Here is the structure of such an entry:
 ```C
 //JSON data dictionary entry
 typedef struct jsonvar_t {
@@ -96,7 +96,7 @@ JSD_START
   JSD (iarr_a,  JT_STR,   1,             sizeof(iarr_a)),
 JSD_END;
 ```
-Each `JSD` macro creates an entry in the data dictionary. The macro arguments are the variable name, the data type, number of elements and the size of each element. The size argument is used only for character strings. This JSD macro sets the JSON variable name to be the same as the program variable name. There is also a macro, `JSDN`, which allows you to set JSON name that is different from the variable name.
+Each `JSD` macro creates an entry in the data dictionary. The macro arguments are: variable name, data type, number of elements and the size of each element. The `size` argument is used only for character strings. This JSD macro sets the JSON variable name to be the same as the program variable name. There is also a macro, `JSDN`, which allows you to set JSON name that is different from the variable name.
 
 Arrays of strings can be declared in different ways. One is to declare them as a bi-dimensional array where each element has a fixed size:
 ```C
@@ -141,9 +141,9 @@ int cgi_postform1 (HttpState *state)
 The `url_post` function that takes care of parsing the URL encoded data and updating all the variables. At this stage the JSON data dictionary is used again to identify what variables have to be updated. After this stage the handler function can do whatever needs to be done with the received data and redirect the browser to whatever URL is appropriate. In this case we just reload the current page with the updated values. 
 
 ### The trouble with arrays ###
-The URL encoding system has no concept of arrays so we have to come up with a convention for encoding array elements. By convention, the name of an array element is “`rray_<index>`. For instance (looking at `page2.html`) the elements of `iarr` array are “iarr_0”, “iarr_1”, and so on. The `url_post` function parses these keys in the URL encoded post and updates the appropriate variables. If the variable name contains underscores but doesn’t conform to the `array_<index>` pattern, it is processed like any regular variable (i.e. the whole name is searched in the JSON data dictionary).
+The URL encoding system has no concept of arrays so we have to come up with a convention for encoding array elements. By convention, the name of an array element is `array_<index>`. For instance (looking at `page2.html`) the elements of `iarr` array are `iarr_0`, `iarr_1`, and so on. The `url_post` function parses these keys in the URL encoded post and updates the appropriate variables. If the variable name contains underscores but doesn’t conform to the `array_<index>` pattern, it is processed like any regular variable (i.e. the whole name is searched in the JSON data dictionary).
 
-Adding arrays to the parser brought a few extra wrinkles. Buffer overflow errors are so common that I felt the best place to handle them was in the parser itself instead of leaving the burden to the user. Hence parser checks the received array indices and ignores values above the specified array limits. Also for strings it checks the size of each element and truncates it to the declared size.
+Adding arrays to the parser brought a few extra wrinkles. Buffer overflow errors are so common that I felt the best place to handle them was in the parser itself instead of leaving the burden to the user. Hence, the parser checks the received array indices and ignores values above the specified array limits. Also for strings it checks the size of each element and truncates it to the declared size.
 
 ## Reworking a standard sample ##
 For our next example, let's take the `HUMIDITY.C` sample (from `samples\tcpip\rabbitweb`) and convert it to use our JSON library. The resulting file, `humidity_json.c` can be found in `samples\tcpip\json`.
@@ -180,9 +180,9 @@ The JavaScript code for retrieving data from server is fairly standard. Below is
     }    
   }
 ```
-The `XMLHttpRequest` object sends a GET request to `/getadmin.cgi` and expects a JSON formatted reply. It parses the reply in the `servdata` variable and invokes the `set_fields()` function transfer the data to the page. If something goes wrong, it parses the `nodata` string instead of the server reply. This could happen when the server is not accessible.
+The `XMLHttpRequest` object sends a GET request to `/getadmin.cgi` and expects a JSON formatted reply. It parses the reply in the `servdata` variable and invokes the `set_fields()` function to populate the page. If something goes wrong, it parses the `nodata` string instead of the server reply. This could happen when the server is not accessible.
 
-The `set_fileds()` function simply populates the page with the received values:
+The `set_fields()` function simply populates the page with the received values:
 ```JS
   function set_fields()
   {
@@ -271,14 +271,16 @@ Received data is parsed from the URL-encoded format and placed in the correspond
 
 ### Memory Usage and Execution Time ###
 On a RCM4200 module, the RabbitWeb sample uses about 200k of memory:
+
 ![](mem_humi_rweb.png)
 
 The JSON version uses almost 136k. That is a cool 64k of space saved:
+
 ![](mem_humi_json.png)
 
 Time-wise, the RabbitWeb page loads in 30ms:
 ![](time_humi_rweb.png)
-which is the same as the JSON version: 
+the same as the JSON version: 
 ![](time_humi_json.png)
 
 
@@ -367,7 +369,7 @@ This macro definition must be placed at the end of of the JSON data dictionary.
 
 Syntax:
 ```
-JSD_END;
+JSD_END
 ```
 
 ### `JSD` ###
@@ -375,7 +377,7 @@ This macro definition creates an entry in the JSON data dictionary. The JSON nam
 
 Syntax:
 ```C
-JSD (var, type, count, size),
+JSD (var, type, count, size)
 ```
 Parameters:
 - `var`	    the variable that has to be added to data dictionary
@@ -395,7 +397,7 @@ This macro definition creates an entry in the JSON data dictionary with a name t
 
 Syntax:
 ```
-JSDN (var, name, type, count, size),
+JSDN (var, name, type, count, size)
 ```
 Parameters:
 - `var`	    the variable that has to be added to data dictionary
